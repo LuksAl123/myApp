@@ -66,8 +66,8 @@ const Login: React.FC = () => {
                                 <IonCard>
                                     <IonCardContent>
                                         <form onSubmit={doLogin}>
-                                            <IonInput fill="outline" labelPlacement="floating" label="Email" type="email" placeholder="example@email.com" ></IonInput>
-                                            <IonInput className="ion-margin-top" fill="outline" labelPlacement="floating" label="Password" type="password" placeholder="******" ></IonInput>
+                                            <IonInput mode="md" fill="outline" labelPlacement="floating" label="Email" type="email" placeholder="example@email.com" ></IonInput>
+                                            <IonInput mode="md" className="ion-margin-top" fill="outline" labelPlacement="floating" label="Password" type="password" placeholder="******" ></IonInput>
                                             <IonButton type="submit" expand="block" className="ion-margin-top">
                                                 Login
                                                 <IonIcon icon={logInOutline} slot="end" />
