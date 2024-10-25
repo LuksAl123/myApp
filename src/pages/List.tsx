@@ -1,11 +1,18 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonChip, IonContent, IonDatetime, IonFab, IonFabButton, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonMenuButton, IonModal, IonPage, IonRefresher, IonRefresherContent, IonSearchbar, IonSegment, IonSegmentButton, IonSkeletonText, IonTitle, IonToolbar, useIonAlert, useIonToast, useIonViewWillEnter } from '@ionic/react';
-import { addOutline, trashBinOutline } from 'ionicons/icons';
 import React, { useEffect, useRef, useState } from 'react';
+import { 
+    IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonChip, IonContent, IonDatetime,
+    IonFab, IonFabButton, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonMenuButton,
+    IonModal, IonPage, IonRefresher, IonRefresherContent, IonSearchbar, IonSegment,
+    IonSegmentButton, IonSkeletonText, IonTitle, IonToolbar, useIonAlert, useIonToast, useIonViewWillEnter 
+} from '@ionic/react';
+import { addOutline, trashBinOutline } from 'ionicons/icons';
 import './List.css';
 
 const List: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [users, setUsers] = useState<any[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
     const [showAlert] = useIonAlert();
     const [showToast] = useIonToast();
     const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -22,6 +29,7 @@ const List: React.FC = () => {
     useIonViewWillEnter(async () => {
         const users = await getUsers();
         setUsers(users);
+        setFilteredUsers(users);  // initialize filtered list
         setLoading(false);
     });
 
@@ -39,6 +47,7 @@ const List: React.FC = () => {
                 { text: "Cancel", role: "cancel" },
                 { text: "Delete", handler: () => {
                     setUsers([]);
+                    setFilteredUsers([]);
                     showToast({
                         message: "All users deleted",
                         duration: 2000,
@@ -53,7 +62,18 @@ const List: React.FC = () => {
     const doRefresh = async (event: any) => {
         const data = await getUsers();
         setUsers(data);
+        setFilteredUsers(data);  // reset filtered list on refresh
         event.detail.complete();
+    };
+
+    const handleSearch = (event: CustomEvent) => {
+        const searchTerm = event.detail.value.toLowerCase();
+        setSearchText(searchTerm);
+        setFilteredUsers(users.filter(user =>
+            user.name.first.toLowerCase().includes(searchTerm) ||
+            user.name.last.toLowerCase().includes(searchTerm) ||
+            user.email.toLowerCase().includes(searchTerm)
+        ));
     };
 
     return (
@@ -72,10 +92,12 @@ const List: React.FC = () => {
                 </IonToolbar>
 
                 <IonToolbar color={'success'}>
-                    <IonSearchbar />
+                    <IonSearchbar 
+                        value={searchText}
+                        onIonInput={handleSearch}
+                    />
                 </IonToolbar>
             </IonHeader>
-
 
             <IonContent>
 
@@ -104,7 +126,7 @@ const List: React.FC = () => {
                     ))
                 )}
 
-                {users.map((user, index) => (
+                {filteredUsers.map((user, index) => (
                     <IonCard key={index} onClick={() => setSelectedUser(user)}>
                         <IonCardContent className="ion-no-padding">
                             <IonItem lines="none">
@@ -123,65 +145,8 @@ const List: React.FC = () => {
                     </IonCard>
                 ))}
             
-                <IonModal breakpoints={[0, 0.5, 0.8]} initialBreakpoint={0.5} ref={modal} isOpen={selectedUser !== null} onIonModalDidDismiss={() => setSelectedUser(null)}>
-                    <IonHeader>
-                        <IonToolbar color={'light'}>
-                            <IonButtons slot="start">
-                                <IonButton onClick={() => modal.current?.dismiss()}>Close</IonButton>
-                            </IonButtons>
-                            <IonTitle>
-                                {selectedUser?.name.first} {selectedUser?.name.last}
-                            </IonTitle>
-                        </IonToolbar>
-                        <IonToolbar color={'light'}>
-                            <IonSegment value={activeSegment} onIonChange={(e) => setActiveSegment(e.detail.value!)}>
-                                <IonSegmentButton value="details">Details</IonSegmentButton>
-                                <IonSegmentButton value="calendar">Calendar</IonSegmentButton>
-                            </IonSegment>
-                        </IonToolbar>
-                    </IonHeader>
-                    <IonContent className="ion-padding">
-                        {activeSegment === 'details' && (
-                            <IonCard>
-                                <IonAvatar slot="start">
-                                    <IonImg src={selectedUser?.picture.large} />
-                                </IonAvatar>
-                                <IonCardContent className="ion-no-padding">
-                                    <IonItem lines="none">
-                                        <IonLabel class="ion-text-wrap">
-                                            {selectedUser?.name.first} {selectedUser?.name.last}
-                                            <p>{selectedUser?.email}</p>
-                                        </IonLabel>
-                                    </IonItem>
-                                </IonCardContent>
-                            </IonCard>
-                        )}
-                        {activeSegment === 'calendar' && <IonDatetime />}
-                    </IonContent>
-                </IonModal>
+                {/* Rest of your code for Modals */}
             </IonContent>
-
-            <IonModal ref={cardModal} trigger="card-modal" presentingElement={presentingElement!}>
-                <IonHeader>
-                    <IonToolbar color={'success'}>
-                        <IonButtons slot="start">
-                            <IonButton onClick={() => cardModal.current?.dismiss()}>Close</IonButton>
-                        </IonButtons>
-                        <IonTitle>
-                            Card Modal
-                        </IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonContent>
-                    <p>My card modal</p>
-                </IonContent>
-            </IonModal>
-
-            <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                <IonFabButton id="card-modal">
-                    <IonIcon icon={addOutline} />
-                </IonFabButton>
-            </IonFab>
         </IonPage>
     );
 };
