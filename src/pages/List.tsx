@@ -67,13 +67,20 @@ const List: React.FC = () => {
     };
 
     const handleSearch = (event: CustomEvent) => {
-        const searchTerm = event.detail.value.toLowerCase();
-        setSearchText(searchTerm);
-        setFilteredUsers(users.filter(user =>
-            user.name.first.toLowerCase().includes(searchTerm) ||
-            user.name.last.toLowerCase().includes(searchTerm) ||
-            user.email.toLowerCase().includes(searchTerm)
-        ));
+        // Capture the raw input value, allowing for spaces
+        const rawSearchTerm = event.detail.value;
+        const searchTerm = rawSearchTerm.toLowerCase().replace(/\s+/g, ' ').trim();
+        setSearchText(rawSearchTerm); // Update with the raw input value
+    
+        setFilteredUsers(users.filter(user => {
+            const fullName = `${user.name.first} ${user.name.last}`.toLowerCase().replace(/\s+/g, ' ').trim();
+            return (
+                fullName.includes(searchTerm) ||
+                user.name.first.toLowerCase().includes(searchTerm) ||
+                user.name.last.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
+        }));
     };
 
     return (
