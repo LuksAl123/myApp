@@ -1,0 +1,12 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 160,
+  "importOrder": [
+    "^(react|react-dom|@ionic/react|@ionic/react-router|ionicons|@capacitor|..)",
+    "^components/(.*)$",
+    "^assets/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true
+}
