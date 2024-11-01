@@ -1,5 +1,5 @@
 import { IonBackButton, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonPage, IonRow, IonTitle, IonToolbar, useIonRouter } from '@ionic/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { checkmarkDoneOutline, logInOutline, personCircleOutline } from 'ionicons/icons';
 
 const Register: React.FC = () => {
@@ -10,6 +10,10 @@ const Register: React.FC = () => {
         console.log('doRegister');
         router.goBack();
     };
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [cpassword, setCPassword] = useState('');
 
     return (
         <IonPage>
@@ -29,8 +33,9 @@ const Register: React.FC = () => {
                             <IonCard>
                                 <IonCardContent>
                                     <form onSubmit={doRegister}>
-                                        <IonInput fill="outline" labelPlacement="floating" label="Email" type="email" placeholder="example@email.com" ></IonInput>
-                                        <IonInput className="ion-margin-top" fill="outline" labelPlacement="floating" label="Password" type="password" placeholder="******" ></IonInput>
+                                        <IonInput fill="outline" labelPlacement="floating" label="Email" type="email" placeholder="example@email.com" onIonChange={(e: any) => setUsername(e.target.value)}></IonInput>
+                                        <IonInput className="ion-margin-top" fill="outline" labelPlacement="floating" label="Password" type="password" placeholder="******" onIonChange={(e: any) => setPassword(e.target.value)}></IonInput>
+                                        <IonInput className="ion-margin-top" fill="outline" labelPlacement="floating" label="CPassword" type="password" placeholder="******" onIonChange={(e: any) => setCPassword(e.target.value)}></IonInput>
                                         <IonButton type="submit" expand="block" className="ion-margin-top">
                                             Create my account
                                             <IonIcon icon={checkmarkDoneOutline} slot="end" />
