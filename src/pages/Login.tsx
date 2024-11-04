@@ -8,6 +8,7 @@ import {
   IonHeader,
   IonIcon,
   IonInput,
+  IonLoading,
   IonPage,
   IonRow,
   IonTitle,
@@ -20,19 +21,22 @@ import { logInOutline, personCircleOutline } from "ionicons/icons";
 import FCC from "../assets/fcc.svg";
 import Intro from "../components/Intro";
 import { Preferences } from "@capacitor/preferences";
-import { doLogin } from "../firebaseConfig";
+import { useFirebaseAuth } from "../firebaseConfig";
 import useToast from "../hooks/useToast";
+
 
 const INTRO_KEY = "intro-seen";
 
 const Login: React.FC = () => {
   const router = useIonRouter();
   const { presentToast } = useToast();
+  const { loginUser } = useFirebaseAuth();
 
   const [introSeen, setIntroSeen] = useState(true);
   // const [present, dismiss] = useIonLoading();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState<boolean>(false);
 
   useEffect(() => {
     const checkStorage = async () => {
@@ -45,16 +49,14 @@ const Login: React.FC = () => {
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const res = await doLogin(username, password);
-    if (!res) {
-      console.log("teste login error");
-      presentToast("Error logging in with your credentials");
-    } else {
-      console.log("teste login successfull");
-      presentToast("You have logged in!");
+    setBusy(true);
 
+    const res = await loginUser(username, password);
+    if(res) {
+      presentToast("You have logged in!");
       router.push("/app", "root"); // Only push the route if login is successful
     }
+    setBusy(false);
   }
 
   const finishIntro = async () => {
@@ -79,6 +81,8 @@ const Login: React.FC = () => {
             </IonToolbar>
           </IonHeader>
 
+          <IonLoading message="Please wait..." duration={0} isOpen={busy} />
+
           <IonContent scrollY={false} className="ion-padding">
             <IonGrid fixed>
               <IonRow class="ion-justify-content-center">
@@ -88,6 +92,7 @@ const Login: React.FC = () => {
                   </div>
                 </IonCol>
               </IonRow>
+
 
               <IonRow class="ion-justify-content-center">
                 <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
@@ -131,6 +136,7 @@ const Login: React.FC = () => {
                           Create Account
                           <IonIcon icon={personCircleOutline} slot="end" />
                         </IonButton>
+
 
                         <IonButton
                           onClick={seeIntroAgain}

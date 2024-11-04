@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import useToast from "./hooks/useToast";
 
 const config = {
   apiKey: "AIzaSyC55EjrIGuLzg5QiTQBg7hKwFsv6Rs5mq0",
@@ -14,15 +15,39 @@ const config = {
 const app = initializeApp(config);
 const auth = getAuth(app);
 
-export async function doLogin(username: string, password: string) {
-  const email = `${username}@email.com`;
+export function useFirebaseAuth() {
+  const { presentToast } = useToast();
 
-  try {
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    console.log(res);
-    return true;
-  } catch (error) {
-    console.log(error);
-    return false;
+  async function loginUser(username: string, password: string) {
+    const email = username;
+
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      console.log(res);
+      return true;
+    } catch (error: any) {
+      presentToast(error.message, 4000);
+      return false;
+    }
   }
+
+  async function registerUser(username: string, password: string) {
+    const email = username;
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      presentToast("Invalid email format", 4000);
+      return false;
+    }
+
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      console.log(res);
+      return true;
+    } catch (error: any) {
+      presentToast(error.message, 4000);
+      return false;
+    }
+  }
+
+  return { loginUser, registerUser };
 }
