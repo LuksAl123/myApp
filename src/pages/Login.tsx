@@ -23,15 +23,19 @@ import Intro from "../components/Intro";
 import { Preferences } from "@capacitor/preferences";
 import { useFirebaseAuth } from "../firebaseConfig";
 import useToast from "../hooks/useToast";
+import { setUserState } from "../redux/actions";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 
 
 const INTRO_KEY = "intro-seen";
 
 const Login: React.FC = () => {
   const router = useIonRouter();
+  const history = useHistory();
   const { presentToast } = useToast();
   const { loginUser } = useFirebaseAuth();
-
+  const dispatch = useDispatch();
   const [introSeen, setIntroSeen] = useState(true);
   // const [present, dismiss] = useIonLoading();
   const [username, setUsername] = useState("");
@@ -51,10 +55,11 @@ const Login: React.FC = () => {
 
     setBusy(true);
 
-    const res = await loginUser(username, password);
+    const res: any = await loginUser(username, password);
     if(res) {
+      dispatch(setUserState(res.user.email));
+      history.replace('/list');
       presentToast("You have logged in!");
-      router.push("/app", "root"); // Only push the route if login is successful
     }
     setBusy(false);
   }

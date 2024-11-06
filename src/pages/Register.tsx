@@ -102,7 +102,7 @@ const Register: React.FC = () => {
                       className="ion-margin-top"
                       fill="outline"
                       labelPlacement="floating"
-                      label="CPassword"
+                      label="Confirm Password"
                       type="password"
                       placeholder="******"
                       onIonChange={(e: any) => setCPassword(e.target.value)}

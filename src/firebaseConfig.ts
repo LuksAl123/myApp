@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import useToast from "./hooks/useToast";
 
 const config = {
@@ -15,6 +15,25 @@ const config = {
 const app = initializeApp(config);
 const auth = getAuth(app);
 
+export function getCurrentUser() {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user);  
+      } else {
+        resolve(null);  
+      }
+      unsubscribe();  
+    }, (error) => {
+      reject(error);  
+    });
+  });
+}
+
+export function logoutUser() {
+  return signOut(auth); 
+}
+
 export function useFirebaseAuth() {
   const { presentToast } = useToast();
 
@@ -24,7 +43,7 @@ export function useFirebaseAuth() {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       console.log(res);
-      return true;
+      return res;
     } catch (error: any) {
       presentToast(error.message, 4000);
       return false;
