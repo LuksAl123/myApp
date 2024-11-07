@@ -34,24 +34,58 @@ import "./theme/variables.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Menu from "./pages/Menu";
+import List from "./pages/List";
+import Settings from "./pages/Settings";
+import React, { useState } from "react";
+import AuthGuard from './guards/AuthGuard';
 
-setupIonicReact({
-  //mode: 'ios',
-  //animated: false,
-});
+setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/">
-          <Login />
-        </Route>
-        <Route component={Register} path="/register" exact />
-        <Route component={Menu} path="/app" />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Define the onLogin function
+  const onLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const onLogout = () => {
+    setIsAuthenticated(false);
+  };
+
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route exact path="/">
+            {/* Pass the onLogin function as a prop */}
+            <Login onLogin={onLogin} />
+          </Route>
+          <Route component={Register} path="/register" exact />
+
+          {/* Use AuthGuard for protected routes */}
+          <AuthGuard
+            path="/list"
+            component={List}
+            isAuthenticated={isAuthenticated}
+            exact
+          />
+          <AuthGuard
+            path="/settings"
+            component={Settings}
+            isAuthenticated={isAuthenticated}
+            exact
+          />
+          <AuthGuard
+            path="/app"
+            component={Menu}
+            isAuthenticated={isAuthenticated}
+          />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;
+
