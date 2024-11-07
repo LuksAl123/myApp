@@ -61,6 +61,7 @@ const App: React.FC = () => {
             {/* Pass the onLogin function as a prop */}
             <Login onLogin={onLogin} />
           </Route>
+
           <Route component={Register} path="/register" exact />
 
           {/* Use AuthGuard for protected routes */}

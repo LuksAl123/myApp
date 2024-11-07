@@ -23,9 +23,12 @@ export function useFirebaseAuth() {
 
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
-      console.log(res);
-      return true;
+      if (res.user) {
+        console.log("User logged in: ", res.user);
+        return true;
+      }
     } catch (error: any) {
+      console.error("Login failed: ", error);
       presentToast(error.message, 4000);
       return false;
     }

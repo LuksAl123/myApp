@@ -24,14 +24,16 @@ import { Preferences } from "@capacitor/preferences";
 import { useFirebaseAuth } from "../firebaseConfig";
 import useToast from "../hooks/useToast";
 
+interface LoginProps {
+  onLogin: () => void; 
+}
 
 const INTRO_KEY = "intro-seen";
 
-const Login: React.FC = () => {
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const router = useIonRouter();
   const { presentToast } = useToast();
   const { loginUser } = useFirebaseAuth();
-
   const [introSeen, setIntroSeen] = useState(true);
   // const [present, dismiss] = useIonLoading();
   const [username, setUsername] = useState("");
@@ -45,18 +47,24 @@ const Login: React.FC = () => {
     };
     checkStorage();
   }, []);
-
+  
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    
     setBusy(true);
 
     const res = await loginUser(username, password);
-    if(res) {
+    
+    if (res) {
       presentToast("You have logged in!");
-      router.push("/app", "root"); // Only push the route if login is successful
+      onLogin();
+      setBusy(false);
+      setTimeout(() => {
+        router.push("/app", "root");
+      }, 300);
+    } else {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   const finishIntro = async () => {
