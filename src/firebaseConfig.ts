@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import useToast from "./hooks/useToast";
+import { Preferences } from "@capacitor/preferences";
 
 const config = {
   apiKey: "AIzaSyC55EjrIGuLzg5QiTQBg7hKwFsv6Rs5mq0",
@@ -24,7 +25,7 @@ export function useFirebaseAuth() {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       if (res.user) {
-        console.log("User logged in: ", res.user);
+        await Preferences.set({ key: "userEmail", value: res.user.email ?? "" });
         return true;
       }
     } catch (error: any) {

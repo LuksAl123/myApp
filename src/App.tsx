@@ -36,52 +36,50 @@ import Register from "./pages/Register";
 import Menu from "./pages/Menu";
 import List from "./pages/List";
 import Settings from "./pages/Settings";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AuthGuard from './guards/AuthGuard';
+import { AuthContext } from "./Contexts/AuthContext";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const authContext = useContext(AuthContext);
 
-  // Define the onLogin function
+  if (!authContext) {
+    return <div>Loading...</div>;
+  }
+
+  const { auth } = authContext;
+
   const onLogin = () => {
-    setIsAuthenticated(true);
+    authContext.setAuth(true);
   };
 
   const onLogout = () => {
-    setIsAuthenticated(false);
+    authContext.setAuth(false);
   };
 
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/">
-            {/* Pass the onLogin function as a prop */}
-            <Login onLogin={onLogin} />
-          </Route>
-
-          <Route component={Register} path="/register" exact />
-
-          {/* Use AuthGuard for protected routes */}
-          <AuthGuard
-            path="/list"
-            component={List}
-            isAuthenticated={isAuthenticated}
-            exact
-          />
-          <AuthGuard
-            path="/settings"
-            component={Settings}
-            isAuthenticated={isAuthenticated}
-            exact
-          />
-          <AuthGuard
-            path="/app"
-            component={Menu}
-            isAuthenticated={isAuthenticated}
-          />
+          {/* Check if user is authenticated */}
+          {auth ? (
+            // Private routes for authenticated users
+            <>
+              <Route component={Menu} path="/app" exact />
+              <Route component={List} path="/list" exact />
+              <Route component={Settings} path="/settings" exact />
+            </>
+          ) : (
+            // Public routes for non-authenticated users
+            <>
+              <Route exact path="/">
+                <Login onLogin={onLogin} />
+              </Route>
+              <Route component={Register} path="/register" exact />
+            </>
+          )}
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
@@ -89,4 +87,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-

@@ -16,13 +16,14 @@ import {
   useIonLoading,
   useIonRouter,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { logInOutline, personCircleOutline } from "ionicons/icons";
 import FCC from "../assets/fcc.svg";
 import Intro from "../components/Intro";
 import { Preferences } from "@capacitor/preferences";
 import { useFirebaseAuth } from "../firebaseConfig";
 import useToast from "../hooks/useToast";
+import { AuthContext } from "../Contexts/AuthContext";
 
 interface LoginProps {
   onLogin: () => void; 
@@ -39,6 +40,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<boolean>(false);
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    return <div>Loading...</div>;
+  }
+
+  const { setAuth, auth } = authContext;
+  console.log('auth', auth);
 
   useEffect(() => {
     const checkStorage = async () => {
@@ -57,6 +66,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     
     if (res) {
       presentToast("You have logged in!");
+      setAuth(true);
       onLogin();
       setBusy(false);
       setTimeout(() => {

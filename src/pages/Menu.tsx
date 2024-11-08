@@ -12,13 +12,24 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router";
 import List from "./List";
 import Settings from "./Settings";
 import { homeOutline, logOutOutline, newspaperOutline } from "ionicons/icons";
+import { Preferences } from "@capacitor/preferences";
 
 const Menu: React.FC = () => {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const { value } = await Preferences.get({ key: "userEmail" });
+      setUserEmail(value);
+    };
+    fetchUserEmail();
+  }, []);
+
   const paths = [
     { name: "Home", url: "/app/list", icon: homeOutline },
     { name: "Settings", url: "/app/settings", icon: newspaperOutline },
@@ -32,6 +43,11 @@ const Menu: React.FC = () => {
             <IonToolbar color={"secondary"}>
               <IonTitle>Menu</IonTitle>
             </IonToolbar>
+            <IonToolbar color="light">
+              <div style={{ margin: "0px 0"}} className="ion-padding" >
+                <p>{userEmail ? userEmail : "No user logged in"}</p>
+              </div>
+            </IonToolbar>
           </IonHeader>
           <IonContent>
             {paths.map((item, index) => (
@@ -40,6 +56,7 @@ const Menu: React.FC = () => {
                   detail={true}
                   routerLink={item.url}
                   routerDirection="none"
+                  style={item.name === "Home" ? { paddingTop: "16px" } : {}}
                 >
                   <IonIcon slot="start" icon={item.icon} />
                   {item.name}
