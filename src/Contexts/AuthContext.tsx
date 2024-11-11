@@ -1,15 +1,18 @@
 import React, { createContext, useState, ReactNode } from 'react';
+import { Preferences } from '@capacitor/preferences';
 
 interface AuthContextType {
   auth: { email: string } | null,
   setAuth: React.Dispatch<React.SetStateAction<{ email: string } | null>>;
   setUserData: (userData: any) => void;
+  deleteUserData: () => void;
 }
 
 const initialValues = {
   auth: null,
   setAuth: () => {},
   setUserData: () => {},
+  deleteUserData: () => {},
 }
 
 export const AuthContext = createContext<AuthContextType>(initialValues);
@@ -21,15 +24,23 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [auth, setAuth] = useState<{ email: string } | null>(initialValues.auth);
 
-  function setUserData(userData: { email: string }) {
-    // TODO: adicionar preferences para armazenar user data
+  async function setUserData(userData: { email: string }) {
+    await Preferences.set({
+      key: 'user',
+      value: JSON.stringify(userData),
+    });
     setAuth(userData);
   }
 
-  // TODO: function deleteUserData => remove preferences => setAuth(null)
+  async function deleteUserData() {
+    await Preferences.remove({
+      key: 'user',
+    });
+    setAuth(null);
+  }
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth, setUserData }}>
+    <AuthContext.Provider value={{ auth, setAuth, setUserData, deleteUserData }}>
       {children}
     </AuthContext.Provider>
   );

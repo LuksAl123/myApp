@@ -18,7 +18,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
     <Route
       {...rest}
       render={(props) =>
-        auth ? <Component {...props} /> : <Redirect to="/" />
+        auth ? <Component {...props} /> : <Redirect to="/login" />
       }
     />
   );

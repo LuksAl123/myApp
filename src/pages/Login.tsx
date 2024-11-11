@@ -29,9 +29,8 @@ const INTRO_KEY = "intro-seen";
 const Login: React.FC = () => {
   const router = useIonRouter();
   const { presentToast } = useToast();
-  const { loginUser } = useFirebaseAuth();
+  const { loginUser, logOutUser } = useFirebaseAuth();
   const [introSeen, setIntroSeen] = useState(true);
-  // const [present, dismiss] = useIonLoading();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<boolean>(false);
@@ -41,15 +40,19 @@ const Login: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  const { setAuth, auth } = authContext;
+  const { setAuth, auth, setUserData, deleteUserData } = authContext;
 
   useEffect(() => {
     const checkStorage = async () => {
       const seen = await Preferences.get({ key: INTRO_KEY });
+      const storedUser = await Preferences.get({ key: 'user' });
       setIntroSeen(seen.value === "true");
+      if (storedUser.value) {
+      setAuth(JSON.parse(storedUser.value));
+      }
     };
     checkStorage();
-  }, []);
+  }, [setAuth]);
   
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +65,7 @@ const Login: React.FC = () => {
     
     if (res) {
       presentToast("You have logged in!");
+      setUserData({ email: res.email });
       setAuth({email: res.email});
       setBusy(false);
       setTimeout(() => {
@@ -71,6 +75,12 @@ const Login: React.FC = () => {
       setBusy(false);
     }
   }
+
+  const handleLogout = async () => {
+    await logOutUser(); 
+    setAuth(null); 
+    router.push("/login", "root"); 
+  };
 
   const finishIntro = async () => {
     setIntroSeen(true);

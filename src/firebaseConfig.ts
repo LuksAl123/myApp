@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import useToast from "./hooks/useToast";
 import { Preferences } from "@capacitor/preferences";
 
@@ -53,5 +53,21 @@ export function useFirebaseAuth() {
     }
   }
 
-  return { loginUser, registerUser };
+  async function logOutUser() {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+      await Preferences.remove({ key: "user" });
+      presentToast("You have logged out!");
+    } catch (error) {
+      console.error("Logout failed: ", error);
+      presentToast("Logout failed: " + error.message, 4000);
+    }
+  }
+
+  return { loginUser, registerUser, logOutUser };
 }
+
+
+
+

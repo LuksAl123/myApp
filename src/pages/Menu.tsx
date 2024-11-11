@@ -20,12 +20,16 @@ import { homeOutline, logOutOutline, newspaperOutline } from "ionicons/icons";
 import { AuthContext } from "../contexts/AuthContext";
 
 const Menu: React.FC = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, deleteUserData } = useContext(AuthContext);
 
   const paths = [
     { name: "Home", url: "/app/list", icon: homeOutline },
     { name: "Settings", url: "/app/settings", icon: newspaperOutline },
   ];
+
+  const handleLogout = async () => {
+    await deleteUserData();
+  };
 
   return (
     <IonPage>
@@ -57,7 +61,7 @@ const Menu: React.FC = () => {
             ))}
 
             <IonMenuToggle autoHide={false}>
-              <IonButton expand="full" routerLink="/" routerDirection="root">
+              <IonButton expand="full" onClick={handleLogout}>
                 <IonIcon slot="start" icon={logOutOutline} />
                 Logout
               </IonButton>
