@@ -1,23 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Redirect, Route } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 interface AuthGuardProps {
   component: React.ComponentType<any>;
-  isAuthenticated: boolean;
   path: string;
   exact?: boolean;
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({
   component: Component,
-  isAuthenticated,
   ...rest
 }) => {
+  const { auth } = useContext(AuthContext);
+
   return (
     <Route
       {...rest}
       render={(props) =>
-        isAuthenticated ? <Component {...props} /> : <Redirect to="/" />
+        auth ? <Component {...props} /> : <Redirect to="/" />
       }
     />
   );

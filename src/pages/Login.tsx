@@ -13,7 +13,6 @@ import {
   IonRow,
   IonTitle,
   IonToolbar,
-  useIonLoading,
   useIonRouter,
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
@@ -23,15 +22,11 @@ import Intro from "../components/Intro";
 import { Preferences } from "@capacitor/preferences";
 import { useFirebaseAuth } from "../firebaseConfig";
 import useToast from "../hooks/useToast";
-import { AuthContext } from "../Contexts/AuthContext";
-
-interface LoginProps {
-  onLogin: () => void; 
-}
+import { AuthContext } from "../contexts/AuthContext";
 
 const INTRO_KEY = "intro-seen";
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC = () => {
   const router = useIonRouter();
   const { presentToast } = useToast();
   const { loginUser } = useFirebaseAuth();
@@ -47,7 +42,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   }
 
   const { setAuth, auth } = authContext;
-  console.log('auth', auth);
 
   useEffect(() => {
     const checkStorage = async () => {
@@ -62,12 +56,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     
     setBusy(true);
 
-    const res = await loginUser(username, password);
+    const res: any = await loginUser(username, password);
+
+    console.log(res);
     
     if (res) {
       presentToast("You have logged in!");
-      setAuth(true);
-      onLogin();
+      setAuth({email: res.email});
       setBusy(false);
       setTimeout(() => {
         router.push("/app", "root");

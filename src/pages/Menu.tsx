@@ -12,23 +12,15 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Redirect, Route } from "react-router";
 import List from "./List";
 import Settings from "./Settings";
 import { homeOutline, logOutOutline, newspaperOutline } from "ionicons/icons";
-import { Preferences } from "@capacitor/preferences";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Menu: React.FC = () => {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUserEmail = async () => {
-      const { value } = await Preferences.get({ key: "userEmail" });
-      setUserEmail(value);
-    };
-    fetchUserEmail();
-  }, []);
+  const { auth } = useContext(AuthContext);
 
   const paths = [
     { name: "Home", url: "/app/list", icon: homeOutline },
@@ -45,7 +37,7 @@ const Menu: React.FC = () => {
             </IonToolbar>
             <IonToolbar color="light">
               <div style={{ margin: "0px 0"}} className="ion-padding" >
-                <p>{userEmail ? userEmail : "No user logged in"}</p>
+                <p>{auth ? auth.email : "No user logged in"}</p>
               </div>
             </IonToolbar>
           </IonHeader>
