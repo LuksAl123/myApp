@@ -27,10 +27,6 @@ const Menu: React.FC = () => {
     { name: "Settings", url: "/app/settings", icon: newspaperOutline },
   ];
 
-  const handleLogout = async () => {
-    await deleteUserData();
-  };
-
   return (
     <IonPage>
       <IonSplitPane contentId="main">
@@ -61,7 +57,7 @@ const Menu: React.FC = () => {
             ))}
 
             <IonMenuToggle autoHide={false}>
-              <IonButton expand="full" onClick={handleLogout}>
+              <IonButton expand="full" onClick={deleteUserData}>
                 <IonIcon slot="start" icon={logOutOutline} />
                 Logout
               </IonButton>
@@ -78,6 +74,43 @@ const Menu: React.FC = () => {
         </IonRouterOutlet>
       </IonSplitPane>
     </IonPage>
+
+    {/*
+    <IonPage>
+      <IonMenu contentId="main">
+        <IonHeader>
+          <IonToolbar color={"secondary"}>
+            <IonTitle>Menu</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          {paths.map((item, index) => (
+            <IonMenuToggle key={index} autoHide={false}>
+              <IonItem routerLink={item.url} routerDirection="none">
+                <IonIcon slot="start" icon={item.icon} />
+                {item.name}
+              </IonItem>
+            </IonMenuToggle>
+          ))}
+          <IonMenuToggle autoHide={false}>
+            <IonButton expand="full" onClick={deleteUserData}>
+              <IonIcon slot="start" icon={logOutOutline} />
+              Logout
+            </IonButton>
+          </IonMenuToggle>
+        </IonContent>
+      </IonMenu>
+
+      <IonRouterOutlet id="main">
+        <Route exact path="/app/list" component={List} />
+        <Route path="/app/settings" component={Settings} />
+        <Route exact path="/app">
+          <Redirect to="/app/list" />
+        </Route>
+      </IonRouterOutlet>
+    </IonPage>
+    */}
+
   );
 };
 

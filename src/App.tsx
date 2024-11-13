@@ -34,7 +34,6 @@ import "@ionic/react/css/palettes/dark.system.css";
 import "./theme/variables.css";
 
 import AuthGuard from './guards/AuthGuard';
-
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Menu from "./pages/Menu";
@@ -49,6 +48,7 @@ const App: React.FC = () => {
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <AuthGuard exact path="/" component={Menu} />
+              <Route path="/app/*" component={Menu} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
