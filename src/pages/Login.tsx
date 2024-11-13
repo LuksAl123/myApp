@@ -29,7 +29,7 @@ const INTRO_KEY = "intro-seen";
 const Login: React.FC = () => {
   const router = useIonRouter();
   const { presentToast } = useToast();
-  const { loginUser, logOutUser } = useFirebaseAuth();
+  const { loginUser } = useFirebaseAuth();
   const [introSeen, setIntroSeen] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,47 +40,40 @@ const Login: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  const { setAuth, auth, setUserData, deleteUserData } = authContext;
+  const { setUserData } = authContext;
+
+  const checkStorage = async () => {
+    const seen = await Preferences.get({ key: INTRO_KEY });
+    setIntroSeen(seen.value === "true");
+  };
 
   useEffect(() => {
-    const checkStorage = async () => {
-      const seen = await Preferences.get({ key: INTRO_KEY });
-      const storedUser = await Preferences.get({ key: 'user' });
-      setIntroSeen(seen.value === "true");
-      if (storedUser.value) {
-      setAuth(JSON.parse(storedUser.value));
-      }
-    };
     checkStorage();
-  }, [setAuth]);
-  
+  }, []);
+
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    
+
     setBusy(true);
 
     const res: any = await loginUser(username, password);
 
-    console.log(res);
-    
+    console.log("res login.tsx:", res);
+
+    setBusy(false);
+
     if (res) {
+      const userData = { email: res.user.email };
+      console.log("Stored user data:", userData);
+      setUserData(userData);
+
       presentToast("You have logged in!");
-      setUserData({ email: res.email });
-      setAuth({email: res.email});
-      setBusy(false);
+
       setTimeout(() => {
         router.push("/app", "root");
       }, 300);
-    } else {
-      setBusy(false);
     }
   }
-
-  const handleLogout = async () => {
-    await logOutUser(); 
-    setAuth(null); 
-    router.push("/login", "root"); 
-  };
 
   const finishIntro = async () => {
     setIntroSeen(true);
@@ -115,7 +108,6 @@ const Login: React.FC = () => {
                   </div>
                 </IonCol>
               </IonRow>
-
 
               <IonRow class="ion-justify-content-center">
                 <IonCol size="12" sizeMd="8" sizeLg="6" sizeXl="4">
@@ -159,7 +151,6 @@ const Login: React.FC = () => {
                           Create Account
                           <IonIcon icon={personCircleOutline} slot="end" />
                         </IonButton>
-
 
                         <IonButton
                           onClick={seeIntroAgain}

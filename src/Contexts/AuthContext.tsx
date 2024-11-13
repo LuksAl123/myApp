@@ -1,8 +1,8 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
 
 interface AuthContextType {
-  auth: { email: string } | null,
+  auth: { email: string } | null;
   setAuth: React.Dispatch<React.SetStateAction<{ email: string } | null>>;
   setUserData: (userData: any) => void;
   deleteUserData: () => void;
@@ -24,6 +24,18 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [auth, setAuth] = useState<{ email: string } | null>(initialValues.auth);
 
+  const loadUserData = async () => {
+    const storedUser = await Preferences.get({ key: 'user' });
+    console.log('Stored user data from Preferences:', storedUser.value);
+    if (storedUser.value) {
+      setAuth(JSON.parse(storedUser.value));
+    }
+  };
+  
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
   async function setUserData(userData: { email: string }) {
     await Preferences.set({
       key: 'user',
@@ -33,10 +45,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   async function deleteUserData() {
-    await Preferences.remove({
-      key: 'user',
-    });
-    setAuth(null);
+    await Preferences.remove({ key: 'user' });
+    setAuth(initialValues.auth);
   }
 
   return (

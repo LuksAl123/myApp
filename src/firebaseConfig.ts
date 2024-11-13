@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import useToast from "./hooks/useToast";
 import { Preferences } from "@capacitor/preferences";
+import { AuthContext } from "./contexts/AuthContext";
+import { useContext } from "react";
 
 const config = {
   apiKey: "AIzaSyC55EjrIGuLzg5QiTQBg7hKwFsv6Rs5mq0",
@@ -18,25 +20,20 @@ const auth = getAuth(app);
 
 export function useFirebaseAuth() {
   const { presentToast } = useToast();
+  const { setAuth, setUserData, deleteUserData } = useContext(AuthContext);
 
-  async function loginUser(username: string, password: string) {
-    const email = username;
-
+  async function loginUser(email: string, password: string) {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
-      if (res.user) {
-        await Preferences.set({ key: "userEmail", value: res.user.email ?? "" });
-        return true;
-      }
+      return res;
     } catch (error: any) {
       console.error("Login failed: ", error);
       presentToast(error.message, 4000);
-      return false;
+      return null;
     }
   }
 
-  async function registerUser(username: string, password: string) {
-    const email = username;
+  async function registerUser(email: string, password: string) {
 
     if (!/\S+@\S+\.\S+/.test(email)) {
       presentToast("Invalid email format", 4000);
@@ -45,7 +42,10 @@ export function useFirebaseAuth() {
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(res);
+      console.log('res firebaseconfig', res);
+      const userData = { email: res.user.email ?? "" };
+      await Preferences.set({ key: "user", value: JSON.stringify(userData) });
+      setUserData(userData);
       return true;
     } catch (error: any) {
       presentToast(error.message, 4000);
@@ -54,10 +54,10 @@ export function useFirebaseAuth() {
   }
 
   async function logOutUser() {
-    const auth = getAuth();
     try {
       await signOut(auth);
       await Preferences.remove({ key: "user" });
+      deleteUserData();
       presentToast("You have logged out!");
     } catch (error) {
       console.error("Logout failed: ", error);

@@ -32,24 +32,22 @@ const Menu: React.FC = () => {
       <IonSplitPane contentId="main">
         <IonMenu contentId="main">
           <IonHeader>
-            <IonToolbar color={"secondary"}>
+            <IonToolbar color="secondary">
               <IonTitle>Menu</IonTitle>
             </IonToolbar>
+
             <IonToolbar color="light">
-              <div style={{ margin: "0px 0"}} className="ion-padding" >
-                <p>{auth ? auth.email : "No user logged in"}</p>
+              <div className="ion-padding" style={{ textAlign: 'center' }}>
+                <p style={{ fontWeight: 'bold', color: 'dark' }}>
+                  {auth?.email}
+                </p>
               </div>
             </IonToolbar>
           </IonHeader>
           <IonContent>
             {paths.map((item, index) => (
               <IonMenuToggle key={index} autoHide={false}>
-                <IonItem
-                  detail={true}
-                  routerLink={item.url}
-                  routerDirection="none"
-                  style={item.name === "Home" ? { paddingTop: "16px" } : {}}
-                >
+                <IonItem detail={true} routerLink={item.url} routerDirection="none">
                   <IonIcon slot="start" icon={item.icon} />
                   {item.name}
                 </IonItem>
@@ -57,11 +55,11 @@ const Menu: React.FC = () => {
             ))}
 
             <IonMenuToggle autoHide={false}>
-              <IonButton expand="full" onClick={deleteUserData}>
-                <IonIcon slot="start" icon={logOutOutline} />
-                Logout
-              </IonButton>
-            </IonMenuToggle>
+            <IonButton expand="full" onClick={deleteUserData}>
+              <IonIcon slot="start" icon={logOutOutline} />
+              Logout
+            </IonButton>
+          </IonMenuToggle>
           </IonContent>
         </IonMenu>
 
@@ -74,42 +72,6 @@ const Menu: React.FC = () => {
         </IonRouterOutlet>
       </IonSplitPane>
     </IonPage>
-
-    {/*
-    <IonPage>
-      <IonMenu contentId="main">
-        <IonHeader>
-          <IonToolbar color={"secondary"}>
-            <IonTitle>Menu</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent>
-          {paths.map((item, index) => (
-            <IonMenuToggle key={index} autoHide={false}>
-              <IonItem routerLink={item.url} routerDirection="none">
-                <IonIcon slot="start" icon={item.icon} />
-                {item.name}
-              </IonItem>
-            </IonMenuToggle>
-          ))}
-          <IonMenuToggle autoHide={false}>
-            <IonButton expand="full" onClick={deleteUserData}>
-              <IonIcon slot="start" icon={logOutOutline} />
-              Logout
-            </IonButton>
-          </IonMenuToggle>
-        </IonContent>
-      </IonMenu>
-
-      <IonRouterOutlet id="main">
-        <Route exact path="/app/list" component={List} />
-        <Route path="/app/settings" component={Settings} />
-        <Route exact path="/app">
-          <Redirect to="/app/list" />
-        </Route>
-      </IonRouterOutlet>
-    </IonPage>
-    */}
 
   );
 };

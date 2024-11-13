@@ -13,6 +13,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   ...rest
 }) => {
   const { auth } = useContext(AuthContext);
+  console.log(auth)
 
   return (
     <Route
