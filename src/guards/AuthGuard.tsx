@@ -12,8 +12,9 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   component: Component,
   ...rest
 }) => {
-  const { auth } = useContext(AuthContext);
-  console.log(auth)
+  const { loading, auth } = useContext(AuthContext);
+
+  if (loading) return <></>;
 
   return (
     <Route

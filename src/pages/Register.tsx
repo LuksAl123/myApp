@@ -15,21 +15,16 @@ import {
   IonRow,
   IonTitle,
   IonToolbar,
-  useIonRouter,
 } from "@ionic/react";
 import React, { useState } from "react";
 import {
   checkmarkDoneOutline,
-  logInOutline,
-  personCircleOutline,
 } from "ionicons/icons";
 import useToast from "../hooks/useToast";
 import { useFirebaseAuth } from "../firebaseConfig";
 
 
 const Register: React.FC = () => {
-  const router = useIonRouter();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [cpassword, setCPassword] = useState("");

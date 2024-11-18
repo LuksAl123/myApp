@@ -45,11 +45,11 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
+              <AuthGuard path="/app" component={Menu} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
-              <AuthGuard path="/app" component={Menu} />
               <Route exact path="/">
-                <Redirect to="/login" />
+                <Redirect to="/app" />
               </Route>
         </IonRouterOutlet>
       </IonReactRouter>
